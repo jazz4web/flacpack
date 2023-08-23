@@ -1,9 +1,9 @@
 import argparse
-import pprint
 import sys
 
 from .checker import check_format
-from .parser import export_metadata, extract_metadata, read_file
+from .parser import (
+    export_metadata, extract_metadata, import_cuesheet, read_file)
 
 
 def parse_args(version):
@@ -26,7 +26,6 @@ def show_error(msg, code=1):
 
 
 def start_the_process(arguments):
-    print(arguments)
     meta = dict()
     check_format(arguments.filename, meta)
     if meta['flac'] is None:
@@ -36,5 +35,4 @@ def start_the_process(arguments):
         extract_metadata(meta, arguments.filename)
         export_metadata(meta)
     else:
-        pass
-    pprint.pprint(meta)
+        import_cuesheet(meta, arguments.filename)

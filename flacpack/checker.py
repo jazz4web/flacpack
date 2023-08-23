@@ -20,3 +20,4 @@ def check_format(filename, store):
         store['cue'] = os.path.realpath(cue)
     else:
         store['cue'] = None
+        store['cuefile'] = os.path.realpath(cue)

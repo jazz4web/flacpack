@@ -11,18 +11,6 @@ def check_dep(dependency):
             return True
 
 
-def detect_f_type(name):
-    dep = check_dep('metaflac')
-    if not dep:
-        raise OSError(f'`flac` is not installed')
-    cmd = shlex.split(f'metaflac --list "{name}"')
-    with Popen(cmd, stdout=PIPE, stderr=PIPE) as metaflac:
-        result = metaflac.communicate()
-    if metaflac.returncode:
-        raise TypeError('unsupported format, we need FLAC file')
-    return result[0]
-
-
 def detect_c_type(name):
     dep = check_dep('file')
     if not dep:

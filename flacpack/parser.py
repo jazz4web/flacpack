@@ -71,3 +71,12 @@ def export_metadata(store):
     store['flac']['comment'] = store['comment']
     store['flac']['cuesheet'] = '\n'.join(store['cuecont'])
     store['flac'].save()
+
+
+def import_cuesheet(store, filename):
+    if cue := store['flac'].get('cuesheet'):
+        cue = cue[0].split('\n')
+        i = get_value(r'FILE +(.+)', cue, file=True)
+        cue[i] = f'FILE "{filename}" WAVE'
+        with open(store['cuefile'], 'w', encoding='utf-8') as cuesheet:
+            cuesheet.write('\n'.join(cue))
