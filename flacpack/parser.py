@@ -1,4 +1,5 @@
 import importlib.util
+import re
 
 from .system import detect_c_type
 
@@ -17,9 +18,38 @@ def read_file(store):
         raise RuntimeError('impossible to read cuesheet')
 
 
-def parse_field(pattern, filename, content):
+def get_value(exp, content, file=False, index=False):
+    pattern = re.compile(exp)
     for i in range(len(content)):
         box = pattern.match(content[i])
         if box:
-            break
-    content[i] = f'FILE "{filename}" WAVE'
+            if file:
+                return i
+            if index:
+                return box.group(1)
+            return box.group(1).strip('"')
+
+
+def f_to_seconds(s):
+    mm, ss, ff = re.split(r'[:.]', s)
+    return int(mm) * 60 + int(ss) + int(ff) / 75
+
+
+def extract_metadata(store, filename):
+    i = get_value(r'FILE +(.+)', store['cuecont'], file=True)
+    store['cuecont'][i] = f'FILE "{filename}" WAVE'
+    store['performer'] = get_value(r'^PERFORMER +(.+)', store['cuecont'])
+    store['album'] = get_value(r'^TITLE +(.+)', store['cuecont'])
+    store['genre'] = get_value(r'^REM GENRE +(.+)', store['cuecont'])
+    store['disc id'] = get_value(r'^REM DISCID +(.+)', store['cuecont'])
+    store['date'] = get_value(r'^REM DATE +(.+)', store['cuecont'])
+    store['comment'] = get_value(r'^REM COMMENT +(.+)', store['cuecont'])
+    r = list(reversed(store['cuecont']))
+    store['tracks'] = get_value(r'^ +TRACK +(\d+) +(.+)', r, index=True)
+    store['last'] = get_value(
+        r'^ +INDEX 01 +(\d{2}:\d{2}:\d{2})', r, index=True)
+    if not store['last'] or not store['tracks']:
+        raise ValueError('bad cuesheet')
+    store['last'] = f_to_seconds(store['last'])
+    if store['last'] >= store['duration']:
+        print('warning: cuesheet smells fishy')

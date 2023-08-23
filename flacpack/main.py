@@ -1,10 +1,9 @@
 import argparse
 import pprint
-import re
 import sys
 
 from .checker import check_format
-from .parser import parse_field, read_file
+from .parser import extract_metadata, read_file
 
 
 def parse_args(version):
@@ -32,8 +31,7 @@ def start_the_process(arguments):
     check_format(arguments.filename, meta)
     if meta['cue']:
         read_file(meta)
-        parse_field(
-            re.compile(r'FILE +(.+)'), arguments.filename, meta['cuecont'])
+        extract_metadata(meta, arguments.filename)
     else:
         pass
     pprint.pprint(meta)
