@@ -29,6 +29,8 @@ def start_the_process(arguments):
     print(arguments)
     meta = dict()
     check_format(arguments.filename, meta)
+    if meta['flac'] is None:
+        raise FileNotFoundError('cannot find FLAC file')
     if meta['cue']:
         read_file(meta)
         extract_metadata(meta, arguments.filename)

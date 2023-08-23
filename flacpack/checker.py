@@ -1,36 +1,20 @@
+import importlib.util
 import os
 
-from .system import detect_f_type
-
-
-def grep(data, s):
-    for each in data:
-        if s in each:
-            return each
-
-
-def get_num(s):
-    r = ''
-    for i in s:
-        if i.isnumeric():
-            r += i
-    if r:
-        return int(r)
-    return 0
+from mutagen.flac import FLAC, MutagenError
 
 
 def check_format(filename, store):
     if not os.path.exists(filename):
         raise FileNotFoundError(f'`{filename}` does not exist')
-    data = detect_f_type(filename)
-    snum = get_num(
-        grep(data.split(b'\n'), b'total samples').decode('utf-8'))
-    sr = get_num(
-        grep(data.split(b'\n'), b'sample_rate').decode('utf-8'))
-    if not sr:
-        raise ValueError('unsupported sample rate')
-    store['duration'] = snum / sr
-    store['flac'] = os.path.realpath(filename)
+    if importlib.util.find_spec('mutagen') is None:
+        raise OSError('python3 module `mutagen` is not installed')
+    try:
+        flac = FLAC(os.path.realpath(filename))
+        store['flac'] = flac
+        store['duration'] = flac.info.total_samples / flac.info.sample_rate
+    except MutagenError:
+        store['flac'] = None
     cue = f'{os.path.splitext(filename)[0]}.cue'
     if os.path.exists(cue):
         store['cue'] = os.path.realpath(cue)
