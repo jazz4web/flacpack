@@ -80,3 +80,5 @@ def import_cuesheet(store, filename):
         cue[i] = f'FILE "{filename}" WAVE'
         with open(store['cuefile'], 'w', encoding='utf-8') as cuesheet:
             cuesheet.write('\n'.join(cue))
+    else:
+        raise RuntimeError('there is no cuesheet')
