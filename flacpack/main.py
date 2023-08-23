@@ -3,7 +3,7 @@ import pprint
 import sys
 
 from .checker import check_format
-from .parser import extract_metadata, read_file
+from .parser import export_metadata, extract_metadata, read_file
 
 
 def parse_args(version):
@@ -32,6 +32,7 @@ def start_the_process(arguments):
     if meta['cue']:
         read_file(meta)
         extract_metadata(meta, arguments.filename)
+        export_metadata(meta)
     else:
         pass
     pprint.pprint(meta)

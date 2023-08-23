@@ -1,5 +1,9 @@
 import importlib.util
+import io
 import re
+import shlex
+
+from subprocess import Popen, PIPE
 
 from .system import detect_c_type
 
@@ -53,3 +57,26 @@ def extract_metadata(store, filename):
     store['last'] = f_to_seconds(store['last'])
     if store['last'] >= store['duration']:
         print('warning: cuesheet smells fishy')
+
+
+def export_metadata(store):
+    f = open('/tmp/tmp.cue', 'w')
+    f.write('\n'.join(store['cuecont']))
+    f.close()
+    cmd = 'metaflac {0}{1}{2}{3}{4}{5}{6}{7}{8}{9} "{10}"'.format(
+        '--remove-all-tags',
+        f' --no-utf8-convert',
+        f' --set-tag=\"artist={store["performer"]}\"',
+        f' --set-tag=\"album={store["album"]}\"',
+        f' --set-tag=\"genre={store["genre"]}\"',
+        f' --set-tag=\"date={store["date"]}\"',
+        f' --set-tag=\"tracks={store["tracks"]}\"',
+        f' --set-tag=\"discid={store["disc id"]}\"',
+        f' --set-tag=\"comment={store["comment"]}\"',
+        f' --set-tag-from-file=cuesheet=/tmp/tmp.cue',
+        store['flac'])
+    with Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE) as metaflac:
+        result = metaflac.communicate()
+    if metaflac.returncode:
+        print(result)
+        raise RuntimeError('something bad happened')
