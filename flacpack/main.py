@@ -33,7 +33,7 @@ def start_the_process(arguments):
         raise FileNotFoundError('cannot find FLAC file')
     if meta['cue']:
         read_file(meta)
-        extract_metadata(meta, arguments.filename)
+        extract_metadata(meta, os.path.basename(arguments.filename))
         export_metadata(meta)
     else:
-        import_cuesheet(meta, arguments.filename)
+        import_cuesheet(meta, os.path.basename(arguments.filename))
