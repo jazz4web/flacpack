@@ -2,14 +2,24 @@ import importlib.util
 import os
 
 from mutagen.flac import FLAC, MutagenError
+from .system import detect_c_type
+
+
+def check_pic(args, store):
+    dname = os.path.dirname(os.path.realpath(args.filename))
+    pname = os.path.join(dname, args.pic)
+    store['cfpic'] = None
+    if os.path.exists(pname):
+        detect_c_type(pname, text=False)
+        store['cfpic'] = pname
 
 
 def check_format(filename, store):
     if not os.path.exists(filename):
         raise FileNotFoundError(f'`{filename}` does not exist')
-    bname = os.path.basename(filename)
     dname = os.path.dirname(os.path.realpath(filename))
-    name = os.path.splitext(bname)[0]
+    store['dir'] = dname
+    name = os.path.splitext(os.path.basename(filename))[0]
     if importlib.util.find_spec('mutagen') is None:
         raise OSError('python3 module `mutagen` is not installed')
     try:
@@ -24,4 +34,3 @@ def check_format(filename, store):
     else:
         store['cue'] = None
         store['cuefile'] = cue
-

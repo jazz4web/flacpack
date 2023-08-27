@@ -11,7 +11,7 @@ def check_dep(dependency):
             return True
 
 
-def detect_c_type(name):
+def detect_c_type(name, text=True):
     dep = check_dep('file')
     if not dep:
         raise OSError(f'`file` is not installed')
@@ -20,5 +20,9 @@ def detect_c_type(name):
         result = p.communicate()
     if p.returncode:
         raise RuntimeError('something bad happened')
-    if result[0].decode('utf-8').strip() != 'text/plain':
-        raise ValueError('bad cue')
+    if text:
+        if result[0].decode('utf-8').strip() != 'text/plain':
+            raise ValueError('bad cue')
+    else:
+        if result[0].decode('utf-8').strip() != 'image/jpeg':
+            raise ValueError('bad picture')

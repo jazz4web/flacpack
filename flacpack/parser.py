@@ -4,7 +4,8 @@ import re
 import shlex
 
 from subprocess import Popen, PIPE
-from mutagen.flac import FLAC
+from mutagen.flac import FLAC, Picture
+from mutagen.id3 import PictureType
 
 from .system import detect_c_type
 
@@ -62,6 +63,15 @@ def extract_metadata(store, filename):
 
 def export_metadata(store):
     store['flac'].delete()
+    if pic := store.get('cfpic'):
+        store['flac'].clear_pictures()
+        p = Picture()
+        with open(pic, 'rb') as f:
+            p.data = f.read()
+        p.type = PictureType.COVER_FRONT
+        p.mime = 'image/jpeg'
+        p.desc = 'cover front'
+        store['flac'].add_picture(p)
     store['flac']['artist'] = store['performer']
     store['flac']['album'] = store['album']
     store['flac']['genre'] = store['genre']
@@ -80,5 +90,11 @@ def import_cuesheet(store, filename):
         cue[i] = f'FILE "{filename}" WAVE'
         with open(store['cuefile'], 'w', encoding='utf-8') as cuesheet:
             cuesheet.write('\n'.join(cue))
+        if store['flac'].pictures:
+            pic = store['flac'].pictures[0]
+            if pic.mime == 'image/jpeg':
+                pname = f'{store["dir"]}/folder.jpg'
+                with open(pname, 'wb') as image:
+                    image.write(pic.data)
     else:
         raise RuntimeError('there is no cuesheet')
