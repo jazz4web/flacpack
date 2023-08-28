@@ -1,3 +1,14 @@
+"""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+name:        flacpack
+description: a simple tool packing
+             cuesheet inside a FLAC file
+license:     GNU GPLv3
+author:      Jazz
+contacts:    webmaster@codej.ru
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+
 import importlib.util
 import os
 

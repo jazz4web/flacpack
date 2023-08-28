@@ -1,3 +1,14 @@
+"""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+name:        flacpack
+description: a simple tool packing
+             cuesheet inside a FLAC file
+license:     GNU GPLv3
+author:      Jazz
+contacts:    webmaster@codej.ru
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+
 import argparse
 import os
 import sys
@@ -12,7 +23,7 @@ def parse_args(version):
     args.add_argument(
         '-v', '--version', action='version', version=version)
     args.add_argument(
-        '-p', action='store', dest='pic', help='add a cover fron picture')
+        '-p', action='store', dest='pic', help='add a cover front picture')
     args.add_argument(
         'filename', action='store', help='the target file name')
     return args.parse_args()
