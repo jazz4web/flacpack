@@ -26,7 +26,7 @@ metadata and there is only FLAC file inside the parent directory:
 flacpack sample.flac
 ```
 
-More information is available on my [web-site](https://codej.ru/iMOCFZNc) or
+More information is available on my [web-site](https://avm4.ru/jMkKiHGC) or
 in terminal with the key --help.
 
 ```
